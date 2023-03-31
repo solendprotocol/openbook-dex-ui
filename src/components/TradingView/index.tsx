@@ -7,10 +7,10 @@ import {
   IChartingLibraryWidget,
 } from '../../charting_library';
 
-import { useMarket, USE_MARKETS } from '../../utils/markets';
+import { useMarket, useMarkets } from '../../utils/markets';
 import * as saveLoadAdapter from './saveLoadAdapter';
 import { flatten } from '../../utils/utils';
-import { BONFIDA_DATA_FEED } from '../../utils/bonfidaConnector';
+import { REPORTER_DATA_FEED } from '../../utils/lionfiReporterConnector';
 
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol'];
@@ -50,7 +50,7 @@ export const TVChartContainer = () => {
     userId: 'public_user_id',
     fullscreen: false,
     autosize: true,
-    datafeedUrl: BONFIDA_DATA_FEED,
+    datafeedUrl: REPORTER_DATA_FEED,
     studiesOverrides: {},
   };
 
@@ -68,7 +68,7 @@ export const TVChartContainer = () => {
 
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol:
-        USE_MARKETS.find(
+        useMarkets.find(
           (m) => m.address.toBase58() === market?.publicKey.toBase58(),
         )?.name || 'SRM/USDC',
       // BEWARE: no trailing slash is expected in feed URL

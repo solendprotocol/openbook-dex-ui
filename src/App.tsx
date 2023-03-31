@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import './App.less';
 import { ConnectionProvider, useConnectionConfig } from './utils/connection';
 import { WalletProvider } from '@solana/wallet-adapter-react';
@@ -17,6 +17,7 @@ import {
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { MathWalletAdapter } from '@solana/wallet-adapter-mathwallet';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { runMarketUpdate } from './utils/markets';
 
 function AppImpl() {
   const { endpoint } = useConnectionConfig();
@@ -32,6 +33,14 @@ function AppImpl() {
     ],
     [network],
   );
+  const [, updateState] = useState();
+
+  useEffect(() => {
+    runMarketUpdate().then(() => {
+      updateState(undefined);
+    });
+  }, []);
+
   return (
     <ReferrerProvider>
       <WalletProvider autoConnect wallets={wallets}>

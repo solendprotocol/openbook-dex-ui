@@ -39,17 +39,47 @@ import {
 } from './types';
 import { WRAPPED_SOL_MINT } from '@openbook-dex/openbook/lib/token-instructions';
 import { Order } from '@openbook-dex/openbook/lib/market';
-import AlephApi from './mysteryConnector';
+import AlephApi from './alephConnector';
 
 // Used in debugging, should be false in production
 const _IGNORE_DEPRECATED = false;
 
-export const USE_MARKETS: MarketInfo[] = _IGNORE_DEPRECATED
+export let useMarkets: MarketInfo[] = _IGNORE_DEPRECATED
   ? MARKETS.map((m) => ({ ...m, deprecated: false }))
   : MARKETS;
 
+export async function runMarketUpdate() {
+  const fetchedMarkets = (
+    (await (
+      await fetch(
+        `${
+          process.env.REACT_APP_REPORTER_API || 'http://localhost:8080'
+        }/markets`,
+      )
+    ).json()) as MarketInfo[]
+  ).map((v) => {
+    v.address = new PublicKey(v.address);
+    v.programId = new PublicKey(v.programId);
+
+    return v;
+  });
+
+  const addedMarkets: MarketInfo[] = [];
+  for (const market of fetchedMarkets) {
+    if (
+      !useMarkets.find(
+        (m) => m.address.toBase58() === market.address.toBase58(),
+      )
+    ) {
+      addedMarkets.push(market);
+    }
+  }
+
+  useMarkets = useMarkets.concat(addedMarkets);
+}
+
 export function useMarketsList() {
-  return USE_MARKETS.filter(
+  return useMarkets.filter(
     ({ name, deprecated }) =>
       !deprecated && !process.env.REACT_APP_EXCLUDE_MARKETS?.includes(name),
   );
@@ -112,9 +142,9 @@ export function useUnmigratedOpenOrdersAccounts() {
     let deprecatedOpenOrdersAccounts: OpenOrders[] = [];
     const deprecatedProgramIds = Array.from(
       new Set(
-        USE_MARKETS.filter(({ deprecated }) => deprecated).map(
-          ({ programId }) => programId.toBase58(),
-        ),
+        useMarkets
+          .filter(({ deprecated }) => deprecated)
+          .map(({ programId }) => programId.toBase58()),
       ),
     ).map((publicKeyStr) => new PublicKey(publicKeyStr));
     let programId: PublicKey;
@@ -133,7 +163,7 @@ export function useUnmigratedOpenOrdersAccounts() {
                 openOrders.quoteTokenTotal.toNumber(),
             )
             .filter((openOrders) =>
-              USE_MARKETS.some(
+              useMarkets.some(
                 (market) =>
                   market.deprecated && market.address.equals(openOrders.market),
               ),
@@ -177,7 +207,7 @@ const _SLOW_REFRESH_INTERVAL = 5 * 1000;
 // For things that change frequently
 const _FAST_REFRESH_INTERVAL = 1000;
 
-export const DEFAULT_MARKET = USE_MARKETS.find(
+export const DEFAULT_MARKET = useMarkets.find(
   ({ name, deprecated }) => name === 'SOL/USDC' && !deprecated,
 );
 
@@ -261,13 +291,13 @@ export function MarketProvider({ marketAddress, setMarketAddress, children }) {
     }
     Market.load(connection, marketInfo.address, {}, marketInfo.programId)
       .then(setMarket)
-      .catch((e) =>
+      .catch((e) => {
         notify({
           message: 'Error loading market',
           description: e.message,
           type: 'error',
-        }),
-      );
+        });
+      });
     // eslint-disable-next-line
   }, [connection, marketInfo]);
 
@@ -779,7 +809,7 @@ export const useAllOpenOrders = (): {
             console.warn(`Error loading open order ${marketInfo.name} - ${e}`);
           }
         };
-        await Promise.all(USE_MARKETS.map((m) => getOpenOrdersForMarket(m)));
+        await Promise.all(useMarkets.map((m) => getOpenOrdersForMarket(m)));
         setOpenOrders(_openOrders);
         setLastRefresh(new Date().getTime());
         setLoaded(true);
@@ -904,7 +934,7 @@ export function useUnmigratedDeprecatedMarkets() {
       return null;
     }
     const getMarket = async (address) => {
-      const marketInfo = USE_MARKETS.find((market) =>
+      const marketInfo = useMarkets.find((market) =>
         market.address.equals(address),
       );
       if (!marketInfo) {
@@ -1103,7 +1133,7 @@ export function getMarketInfos(
     deprecated: false,
   }));
 
-  return [...customMarketsInfo, ...USE_MARKETS];
+  return [...customMarketsInfo, ...useMarkets];
 }
 
 export function useMarketInfos() {
