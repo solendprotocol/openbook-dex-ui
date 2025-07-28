@@ -32,11 +32,11 @@ export function ConnectionProvider({ children }) {
   const availableEndpoints = ENDPOINTS.concat(customEndpoints);
 
   const connection = useMemo(
-    () => new Connection(endpoint, 'recent'),
+    () => new Connection(endpoint, 'processed'),
     [endpoint],
   );
   const sendConnection = useMemo(
-    () => new Connection(endpoint, 'recent'),
+    () => new Connection(endpoint, 'processed'),
     [endpoint],
   );
   const [priorityFee, setPriorityFee] = useState<number | undefined>(undefined);

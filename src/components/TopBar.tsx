@@ -116,7 +116,7 @@ export default function TopBar() {
     };
 
     try {
-      const connection = new Connection(info.endpoint, 'recent');
+      const connection = new Connection(info.endpoint, 'processed');
       connection
         .getBlockTime(0)
         .then(() => {

@@ -765,9 +765,8 @@ export async function signTransaction({
   connection: Connection;
 }) {
   assert(wallet.publicKey, 'Expected `publicKey` to be non-null');
-  transaction.recentBlockhash = (
-    await connection.getRecentBlockhash('max')
-  ).blockhash;
+  transaction.recentBlockhash = (await connection.getLatestBlockhash())
+    .blockhash;
   transaction.setSigners(wallet.publicKey, ...signers.map((s) => s.publicKey));
   if (signers.length > 0) {
     transaction.partialSign(...signers);
@@ -1015,7 +1014,7 @@ export async function getMultipleSolanaAccounts(
 ): Promise<
   RpcResponseAndContext<{ [key: string]: AccountInfo<Buffer> | null }>
 > {
-  const args = [publicKeys.map((k) => k.toBase58()), { commitment: 'recent' }];
+  const args = [publicKeys.map((k) => k.toBase58()), { commitment: 'processed' }];
   // @ts-ignore
   const unsafeRes = await connection._rpcRequest('getMultipleAccounts', args);
   const res = GetMultipleAccountsAndContextRpcResult(unsafeRes);
