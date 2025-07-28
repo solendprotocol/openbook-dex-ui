@@ -35,11 +35,11 @@ function AppImpl() {
   );
   const [, updateState] = useState();
 
-  useEffect(() => {
-    runMarketUpdate().then(() => {
-      updateState(undefined);
-    });
-  }, []);
+  // useEffect(() => {
+  //   runMarketUpdate().then(() => {
+  //     updateState(undefined);
+  //   });
+  // }, []);
 
   return (
     <ReferrerProvider>

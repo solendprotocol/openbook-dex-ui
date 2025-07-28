@@ -342,7 +342,7 @@ const RenderNormal = ({ onChangeOrderRef, onPrice, onSize }) => {
     >
       <Col flex="auto" style={{ height: '50vh' }}>
         <Row style={{ height: '100%' }}>
-          <TVChartContainer />
+          {/* <TVChartContainer /> */}
         </Row>
         <Row style={{ height: '70%' }}>
           <UserInfoTable />
@@ -367,7 +367,7 @@ const RenderSmall = ({ onChangeOrderRef, onPrice, onSize }) => {
   return (
     <>
       <Row style={{ height: '30vh' }}>
-        <TVChartContainer />
+        {/* <TVChartContainer /> */}
       </Row>
       <Row
         style={{
@@ -406,7 +406,7 @@ const RenderSmaller = ({ onChangeOrderRef, onPrice, onSize }) => {
   return (
     <>
       <Row style={{ height: '50vh' }}>
-        <TVChartContainer />
+        {/* <TVChartContainer /> */}
       </Row>
       <Row>
         <Col xs={24} sm={12} style={{ height: '100%', display: 'flex' }}>

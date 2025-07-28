@@ -138,15 +138,15 @@ export const TVChartContainer = () => {
       },
     };
 
-    const tvWidget = new widget(widgetOptions);
+    // const tvWidget = new widget(widgetOptions);
 
-    tvWidget.onChartReady(() => {
-      tvWidgetRef.current = tvWidget;
-      tvWidget
-        // @ts-ignore
-        .subscribe('onAutoSaveNeeded', () => tvWidget.saveChartToServer());
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // tvWidget.onChartReady(() => {
+    //   tvWidgetRef.current = tvWidget;
+    //   tvWidget
+    //     // @ts-ignore
+    //     .subscribe('onAutoSaveNeeded', () => tvWidget.saveChartToServer());
+    // });
+    // // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [market, tvWidgetRef.current]);
 
   return <div id={defaultProps.containerId} className={'TVChartContainer'} />;
