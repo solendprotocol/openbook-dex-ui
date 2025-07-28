@@ -55,7 +55,7 @@
   "scripts": {
     "predeploy": "git pull --ff-only && yarn && yarn --openssl-legacy-provider build",
     "deploy": "gh-pages -d build",
-    "start": "craco --openssl-legacy-provider start",
+    "start": "craco start",
     "build": "craco --openssl-legacy-provider build",
     "test": "craco test",
     "eject": "react-scripts eject",

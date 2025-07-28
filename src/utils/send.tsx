@@ -789,7 +789,7 @@ export async function signTransactions({
 }) {
   assert(wallet.publicKey, 'Expected `publicKey` to be non-null');
   const publicKey = wallet.publicKey;
-  const blockhash = (await connection.getRecentBlockhash('max')).blockhash;
+  const blockhash = (await connection.getLatestBlockhash()).blockhash;
   transactionsAndSigners.forEach(({ transaction, signers = [] }) => {
     transaction.recentBlockhash = blockhash;
     transaction.setSigners(publicKey, ...signers.map((s) => s.publicKey));
